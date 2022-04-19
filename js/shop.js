@@ -7,7 +7,7 @@ var products = [
     type: "grocery",
     offer: {
       number: 3,
-      percent: 20,
+      discountPrice: 10,
     },
   },
   {
@@ -23,7 +23,7 @@ var products = [
     type: "grocery",
     offer: {
       number: 10,
-      percent: 30,
+      discountPrice: 3.33,
     },
   },
   {
@@ -129,28 +129,15 @@ function generateCart() {
 
 // Exercise 5
 function applyPromotionsCart() {
-  // Apply promotions to each item in the array "cart"
-  let isDiscountOil = cart.findIndex((cartProduct) => cartProduct.id === 1);
-  let isDiscountCake = cart.findIndex((cartProduct) => cartProduct.id === 3);
-
-  if (isDiscountOil !== -1) {
-    if (cart[isDiscountOil].quantity >= cart[isDiscountOil].offer.number) {
-      cart[isDiscountOil].subtotalWithDiscount =
-        cart[isDiscountOil].quantity * 10;
-    } else {
-      cart[isDiscountOil].subtotalWithDiscount = 0;
-      cart[isDiscountOil].subtotal =
-        cart[isDiscountOil].price * cart[isDiscountOil].quantity;
-    }
-  }
-  if (isDiscountCake !== -1) {
-    if (cart[isDiscountCake].quantity >= cart[isDiscountCake].offer.number) {
-      cart[isDiscountCake].subtotalWithDiscount =
-        (cart[isDiscountCake].quantity * cart[isDiscountCake].price * 2) / 3;
-    } else {
-      cart[isDiscountCake].subtotalWithDiscount = 0;
-      cart[isDiscountCake].subtotal =
-        cart[isDiscountCake].price * cart[isDiscountCake].quantity;
+  for (let product of cart) {
+    if (product.hasOwnProperty("offer")) {
+      if (product.quantity >= product.offer.number) {
+        product.subtotalWithDiscount =
+          product.quantity * product.offer.discountPrice;
+      } else {
+        product.subtotalWithDiscount = 0;
+        product.subtotal = product.price * product.quantity;
+      }
     }
   }
 }
@@ -193,7 +180,10 @@ function countProducts() {
 function removeFromCart(id) {
   // 1. Loop for to the array products to get the item to remove from the cart
   if (cart.length === 0) {
-    console.log("Your cart is empty");
+    let indexed = products.findIndex((product) => product.id === id);
+    console.log(
+      `You don't have any ${products[indexed].name} in your shopping cart`
+    );
   } else {
     for (const wannaDelete of cart) {
       if (wannaDelete.id === id) {
@@ -216,15 +206,6 @@ function removeFromCart(id) {
 
 // Exercise 9
 function printCart() {
-  // Check if the cart has any item
-  if (cart.length === 0) {
-    document.getElementById("no_content").classList.remove("d-none");
-    document.getElementById("shoppingTable").classList.add("d-none");
-  } else {
-    document.getElementById("shoppingTable").classList.remove("d-none");
-    document.getElementById("no_content").classList.add("d-none");
-  }
-
   // Fill the shopping cart modal manipulating the shopping cart dom
   document.getElementById("shoppingList").innerHTML = "";
 
@@ -256,7 +237,19 @@ function printCart() {
     `;
 }
 
+function isEmpty() {
+  // Check if the cart has any item
+  if (cart.length === 0) {
+    document.getElementById("no_content").classList.remove("d-none");
+    document.getElementById("shoppingTable").classList.add("d-none");
+  } else {
+    printCart();
+    document.getElementById("shoppingTable").classList.remove("d-none");
+    document.getElementById("no_content").classList.add("d-none");
+  }
+}
+
 function open_modal() {
   calculateTotal();
-  printCart();
+  isEmpty();
 }
