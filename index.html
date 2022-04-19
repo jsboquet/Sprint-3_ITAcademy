@@ -430,9 +430,21 @@
           </div>
           <div class="modal-body">
             <div>
-              <ul class="list" id="shoppingList"></ul>
-              <div>
+              <table
+                class="table table-sm table-striped table-hover"
+                id="shoppingTable"
+              >
+                <thead>
+                  <th scope="col">Product</th>
+                  <th scope="col" class="text-end">Quantity</th>
+                  <th scope="col" class="text-end">Price</th>
+                  <th scope="col" class="text-end">Total</th>
+                </thead>
+                <tbody id="shoppingList"></tbody>
+              </table>
+              <div id="no_content">
                 <h3 class="text-center bill px-5">Select Something</h3>
+                <p class="text-center">You have not selected any product</p>
               </div>
               <div class="text-center">
                 <a href="checkout.html" class="btn btn-primary m-3">Checkout</a>

@@ -64,7 +64,7 @@ var products = [
   },
 ];
 // Array with products (objects) added directly with push(). Products in this array are repeated.
-var cartList = [];
+//var cartList = []; It has been deprecated in favour of cart = []
 
 // Improved version of cartList. Cart is an array of products (objects), but each one has a quantity field to define its quantity, so these products are not repeated.
 var cart = [];
@@ -80,13 +80,12 @@ function buy(id) {
       cartList.push(product);
     }
   }
-
   calculateTotal();
 } */
 
 // Exercise 2
 function cleanCart() {
-  var deletedCart = cartList.splice(0, cartList.length);
+  var deletedCart = cart.splice(0, cart.length);
   // Ho guardo en una variable per si en algun moment es volgués recuperar/guardar un carro de la compra.
   return deletedCart;
 }
@@ -94,11 +93,17 @@ function cleanCart() {
 // Exercise 3
 function calculateTotal() {
   // Calculate total price of the cart using the "cartList" array
-  let totalAmount = 0;
-  for (let product of cartList) {
-    totalAmount += product.price;
+  total = 0;
+  for (let product of cart) {
+    if (
+      product.hasOwnProperty("offer") &&
+      product.quantity >= product.offer.number
+    ) {
+      total += product.subtotalWithDiscount;
+    } else {
+      total += product.subtotal;
+    }
   }
-  return totalAmount;
 }
 
 /* // Exercise 4
@@ -173,6 +178,15 @@ function addToCart(id) {
       applyPromotionsCart();
     }
   }
+  countProducts();
+}
+
+function countProducts() {
+  let productCount = 0;
+  for (let product of cart) {
+    productCount += product.quantity;
+  }
+  document.getElementById("count_product").innerHTML = productCount;
 }
 
 // Exercise 8
@@ -196,17 +210,53 @@ function removeFromCart(id) {
         applyPromotionsCart();
       }
     }
+    countProducts();
   }
 }
 
 // Exercise 9
 function printCart() {
-  // Fill the shopping cart modal manipulating the shopping cart dom
-  for (const product of cart) {
-    document.getElementById("shoppingList").innerHTML += ``;
+  // Check if the cart has any item
+  if (cart.length === 0) {
+    document.getElementById("no_content").classList.remove("d-none");
+    document.getElementById("shoppingTable").classList.add("d-none");
+  } else {
+    document.getElementById("shoppingTable").classList.remove("d-none");
+    document.getElementById("no_content").classList.add("d-none");
   }
+
+  // Fill the shopping cart modal manipulating the shopping cart dom
+  document.getElementById("shoppingList").innerHTML = "";
+
+  for (const product of cart) {
+    let price = product.price;
+    let subTot = product.subtotal;
+
+    if (
+      product.hasOwnProperty("offer") &&
+      product.quantity >= product.offer.number
+    ) {
+      subTot = product.subtotalWithDiscount;
+    }
+    document.getElementById("shoppingList").innerHTML += `
+      <tr>
+        <td>${product.name}</td>
+        <td class="text-end">${product.quantity}</td>
+        <td class="text-end">${price.toFixed(2)}</td>
+        <td class="text-end">${subTot.toFixed(2)}</td>
+      </tr>`;
+  }
+
+  document.getElementById("shoppingList").innerHTML += `
+    <tr>
+      <th>TOTAL</th>
+      <td></td><td></td>
+      <th class="text-end">$${total.toFixed(2)}</th>
+    </tr>
+    `;
 }
 
 function open_modal() {
-  console.log("Open Modal");
+  calculateTotal();
+  printCart();
 }
